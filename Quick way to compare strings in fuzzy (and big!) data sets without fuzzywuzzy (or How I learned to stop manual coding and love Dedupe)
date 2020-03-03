@@ -1,6 +1,6 @@
 !pip install pandas-dedupe
 import pandas as pd
 import pandas_dedupe
-df = pd.read_excel(r'C:\Users\MAX\Desktop\Python project\Lobbying and public contracts\Firms list (lobbying).xlsx')
-df = pandas_dedupe.dedupe_dataframe(df,['Client_EN (Government Contract Pursued) (Standardised) n: 2108'])
-df.to_excel(r'C:\Users\MAX\Desktop\Python project\Lobbying and public contracts\Firms list (lobbying).xlsx')
+df = pd.read_excel(r'Enter directory of your input file.xlsx')
+df = pandas_dedupe.dedupe_dataframe(df,['Name of column under scrutiny'])
+df.to_excel(r'Enter directory of your output file.xlsx')
