@@ -19,7 +19,7 @@ a1=process.extract("Accenture", choices, limit=30, scorer=fuzz.token_set_ratio)
 a2=process.extract("Airbus Group", choices, limit=30, scorer=fuzz.token_set_ratio)
 a3=process.extract("Lockheed Martin", choices, limit=30, scorer=fuzz.token_set_ratio)
 
-#Build variables with the ouput of process.extract 
+#Build zipped list with generated variables
 zippedList = list(zip(a1,	a2,	a3))
 
 #Build dataframe with zipped list
