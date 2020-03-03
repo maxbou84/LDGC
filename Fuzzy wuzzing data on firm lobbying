@@ -1,18 +1,29 @@
 # -*- coding: utf-8 -*-
 """
-@author: MAX
+@author: Maxime Boucher
 """
 pip install fuzzywuzzy[speedup]
 import pandas as pd
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
-df = pd.read_excel(r'C:\Users\MAX\Desktop\pythontest.xlsx')
+
+df = pd.read_excel(r'Enter input directory.xlsx')
 df.head(25)
+
+#Set column
 choices = df['supplier-standardized-name'].unique()
 choices[:15]
+
+#Build variables with the ouput of process.extract 
 a1=process.extract("Accenture", choices, limit=30, scorer=fuzz.token_set_ratio)
 a2=process.extract("Airbus Group", choices, limit=30, scorer=fuzz.token_set_ratio)
-a3=process.extract("Alcan ", choices, limit=30, scorer=fuzz.token_set_ratio)
+a3=process.extract("Lockheed Martin", choices, limit=30, scorer=fuzz.token_set_ratio)
+
+#Build variables with the ouput of process.extract 
 zippedList = list(zip(a1,	a2,	a3))
+
+#Build dataframe with zipped list
 dfObj = pd.DataFrame(zippedList, columns = ["a1",	"a2",	"a3"])
-dfObj.to_excel("lobbytest1.xlsx")
+
+#Save dataframe as excel file
+dfObj.to_excel('Enter output directory.xlsx')
