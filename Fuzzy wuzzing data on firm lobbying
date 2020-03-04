@@ -14,12 +14,12 @@ df.head(25)
 choices = df['supplier-standardized-name'].unique()
 choices[:15]
 
-#Build variables with the ouput of process.extract 
+#Build dataframes with the ouput of process.extract 
 a1=process.extract("Accenture", choices, limit=30, scorer=fuzz.token_set_ratio)
 a2=process.extract("Airbus Group", choices, limit=30, scorer=fuzz.token_set_ratio)
 a3=process.extract("Lockheed Martin", choices, limit=30, scorer=fuzz.token_set_ratio)
 
-#Build zipped list with generated variables
+#Build zipped list with generated dataframes
 zippedList = list(zip(a1,	a2,	a3))
 
 #Build dataframe with zipped list
