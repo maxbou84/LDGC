@@ -19,12 +19,16 @@ with zipfile.ZipFile('Communications_OCL_CAL.zip', 'r') as zip_ref:
 name_cols = ['COMLOG_ID',"DPOH_LAST_NM_TCPD","DPOH_FIRST_NM_PRENOM_TCPD","DPOH_TITLE_TITRE_TCPD","BRANCH_UNIT_DIRECTION_SERVICE","OTHER_INSTITUTION_AUTRE","INSTITUTION"]
 pull_cols = ['COMLOG_ID',"DPOH_LAST_NM_TCPD","DPOH_FIRST_NM_PRENOM_TCPD","DPOH_TITLE_TITRE_TCPD","BRANCH_UNIT_DIRECTION_SERVICE","OTHER_INSTITUTION_AUTRE","INSTITUTION"]
 df1 = pd.read_csv(r'Enter your directory', header=None, encoding="ISO-8859-1", names=name_cols, usecols=pull_cols, index_col='COMLOG_ID')
+df1['COMLOG_ID'] = df1['COMLOG_ID'].astype(str)
+
 
 name_cols = ['COMLOG_ID',"CLIENT_ORG_CORP_NUM","EN_CLIENT_ORG_CORP_NM_AN","FR_CLIENT_ORG_CORP_NM","REGISTRANT_NUM_DECLARANT","RGSTRNT_LAST_NM_DCLRNT","RGSTRNT_1ST_NM_PRENOM_DCLRNT","COMM_DATE","REG_TYPE_ENR","SUBMISSION_DATE_SOUMISSION","POSTED_DATE_PUBLICATION","PREV_COMLOG_ID_PRECEDNT"]
 pull_cols = ['COMLOG_ID',"CLIENT_ORG_CORP_NUM","EN_CLIENT_ORG_CORP_NM_AN","FR_CLIENT_ORG_CORP_NM","REGISTRANT_NUM_DECLARANT","RGSTRNT_LAST_NM_DCLRNT","RGSTRNT_1ST_NM_PRENOM_DCLRNT","COMM_DATE","REG_TYPE_ENR","SUBMISSION_DATE_SOUMISSION","POSTED_DATE_PUBLICATION","PREV_COMLOG_ID_PRECEDNT"]
 df2 = pd.read_csv(r'Enter your directory', header=None, encoding="ISO-8859-1", names=name_cols, usecols=pull_cols, index_col=False)
+df2['COMLOG_ID'] = df2['COMLOG_ID'].astype(str)
+df2['ORG_NAME']=df2['EN_CLIENT_ORG_CORP_NM_AN'].mask(pd.isnull, df2['FR_CLIENT_ORG_CORP_NM'])
 
-#
+# merge dataframes
 df3 = pd.merge(df1, df2, how='left', on=['COMLOG_ID'])
 df3.to_excel(r'Enter your directory', index=False)
 
