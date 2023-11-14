@@ -127,4 +127,4 @@ model = arima_model.fit()
 model.plot_predict(dynamic=False)
 plt.show()
 
-df1['date'] = df1.index
+
