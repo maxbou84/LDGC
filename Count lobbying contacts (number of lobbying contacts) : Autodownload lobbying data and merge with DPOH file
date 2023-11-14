@@ -8,7 +8,7 @@ from fuzzywuzzy import process, fuzz
 from urllib.request import urlopen
 from io import BytesIO
 
-os.chdir(r'C:\Users\maxym\OneDrive\Bureau\Work\Python repository\Data input')
+os.chdir(r'C:\Users') **Your directory
 
 
 zipurl = 'https://lobbycanada.gc.ca/media/mqbbmaqk/communications_ocl_cal.zip'
@@ -16,12 +16,9 @@ with urlopen(zipurl) as zipresp:
         with ZipFile(BytesIO(zipresp.read())) as zfile:
             zfile.extractall(r'C:\Users\maxym\OneDrive\Bureau\Work\Python repository\Data input') 
 
-
 df1 = pd.read_csv("Communication_PrimaryExport.csv")
-df1.columns
 
 df2  = pd.read_csv("Communication_DpohExport.csv") 
-df2.columns
 
 df = df1.merge(df2, how="left", on="COMLOG_ID")
-df.columns
+
