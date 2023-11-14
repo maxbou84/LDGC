@@ -1,0 +1,130 @@
+import pandas as pd
+import io
+import requests
+import wget
+import os
+from io import BytesIO
+from urllib.request import urlopen
+from zipfile import ZipFile
+import matplotlib.pyplot as plt
+import seaborn as sns 
+from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.graphics.tsaplots import plot_acf
+from statsmodels.tsa.arima_model import ARIMA
+import numpy as np
+import chow_test as ct
+
+os.chdir(r'C:\Users') ##YOUR DIRECTORY
+
+
+zipurl = 'https://lobbycanada.gc.ca/media/mqbbmaqk/communications_ocl_cal.zip'
+with urlopen(zipurl) as zipresp:
+        with ZipFile(BytesIO(zipresp.read())) as zfile:
+            zfile.extractall(r'C:\Users') ##YOUR DIRECTORY
+            
+            
+df1 = pd.read_csv("Communication_PrimaryExport.csv")
+df1.columns
+df1['COMM_DATE'] = pd.to_datetime(df1['COMM_DATE'], format='%Y-%m')
+df1.index = df1['COMM_DATE']
+
+df1 = (pd.to_datetime(df1['COMM_DATE'])
+       .dt.floor('d')
+       .value_counts()
+       .rename_axis('date')
+       .reset_index(name='count'))
+df1 = df1.set_index('date').resample('3m').sum().pad() 
+sns.lineplot(data=df1, x="date", y="count")
+plt.ylabel("Number of communications")
+
+
+adft = adfuller(df1['count'],autolag="AIC")
+output_df = pd.DataFrame({"Values":[adft[0],adft[1],adft[2],adft[3], adft[4]['1%'], adft[4]['5%'], adft[4]['10%']]  , "Metric":["Test Statistics","p-value","No. of lags used","Number of observations used", 
+                                                        "critical value (1%)", "critical value (5%)", "critical value (10%)"]})
+print(output_df)
+
+plot_acf(df1)
+###Dickey fuller (Q: After last significant lags A:1st)
+f = plt.figure()
+ax1 = f.add_subplot(121)
+ax1.set_title('1st order diff')
+ax1.plot(df1.diff())
+ax2 = f.add_subplot(122)
+plot_acf(df1.diff().dropna(),ax=ax2)
+plt.show()
+
+f = plt.figure()
+ax1 = f.add_subplot(121)
+ax1.set_title('2nd order diff')
+ax1.plot(df1.diff().diff())
+ax2 = f.add_subplot(122)
+plot_acf(df1.diff().diff().dropna(),ax=ax2)
+plt.show()
+
+result = adfuller(df1.dropna())
+print("p-value:",result[1])
+result = adfuller(df1.diff().dropna())
+print("p-value:",result[1])
+result = adfuller(df1.diff().diff().dropna())
+print("p-value:",result[1])
+
+autocorrelation_lag1 = df1['count'].autocorr(lag=1)
+print("One T-Unit Lag: ", autocorrelation_lag1)
+autocorrelation_lag3 = df1['count'].autocorr(lag=3)
+print("Three T-Unit Lag: ", autocorrelation_lag3)
+autocorrelation_lag6 = df1['count'].autocorr(lag=6)
+print("Six T-Unit Lag: ", autocorrelation_lag6)
+autocorrelation_lag9 = df1['count'].autocorr(lag=9)
+print("Nine T-Unit Lag: ", autocorrelation_lag9)
+
+###
+
+rolling_mean = df1.rolling(12).mean()
+rolling_std = df1.rolling(12).std()
+plt.plot(df1, color="blue",label="Original Data")
+plt.plot(rolling_mean, color="red", label="Rolling Mean Coms Number (Red)")
+plt.plot(rolling_std, color="black", label="Rolling Mean Coms Number (Black)")
+plt.title("Coms Time Series, Rolling Mean, Standard Deviation")
+
+decompose = seasonal_decompose(df1['count'],model='additive', period=7)
+decompose.plot()
+plt.show()
+
+### Order of autoregressive mode (P) (Q: most significant lag in the partial autocorrelation plot answer : first one)
+
+f = plt.figure()
+ax1 = f.add_subplot(121)
+ax1.set_title('1st order diff')
+ax1.plot(df1.diff())
+ax2 = f.add_subplot(122)
+plot_acf(df1.diff().dropna(),ax=ax2)
+plt.show()
+
+f = plt.figure()
+ax1 = f.add_subplot(121)
+ax1.set_title('2nd order diff')
+ax1.plot(df1.diff().diff())
+ax2 = f.add_subplot(122)
+plot_acf(df1.diff().diff().dropna(),ax=ax2)
+plt.show()
+
+### Order of autoregressive mode (Q) (Q: How many  significant lags clearly out of threshold in the partial autocorrelation plot B. Answer : 4) - Answer : p=1,d=1,q=4)
+
+f = plt.figure()
+ax1 = f.add_subplot(121)
+ax1.set_title('1st order diff')
+ax1.plot(df1.diff())
+ax2 = f.add_subplot(122)
+plot_acf(df1.diff().dropna(),ax=ax2)
+plt.show()
+
+### ARIMA MODEL
+len(df1)
+arima_model = ARIMA(df1[:40], order=(1,1,2))
+model = arima_model.fit()
+
+model.plot_predict(dynamic=False)
+plt.show()
+
+df1['date'] = df1.index
