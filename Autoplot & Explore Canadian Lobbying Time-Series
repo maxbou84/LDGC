@@ -91,7 +91,7 @@ decompose = seasonal_decompose(df1['count'],model='additive', period=7)
 decompose.plot()
 plt.show()
 
-### Order of autoregressive mode (P) (Q: most significant lag in the partial autocorrelation plot answer : first one)
+### Order of autoregressive mode (P)
 
 f = plt.figure()
 ax1 = f.add_subplot(121)
@@ -109,7 +109,7 @@ ax2 = f.add_subplot(122)
 plot_acf(df1.diff().diff().dropna(),ax=ax2)
 plt.show()
 
-### Order of autoregressive mode (Q) (Q: How many  significant lags clearly out of threshold in the partial autocorrelation plot B. Answer : 4) - Answer : p=1,d=1,q=4)
+### Order of autoregressive mode (Q)
 
 f = plt.figure()
 ax1 = f.add_subplot(121)
