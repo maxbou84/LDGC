@@ -1,6 +1,0 @@
-!pip install pandas-dedupe
-import pandas as pd
-import pandas_dedupe
-df = pd.read_excel(r'Enter directory of your input file.xlsx')
-df = pandas_dedupe.dedupe_dataframe(df,['Name of column under scrutiny'])
-df.to_excel(r'Enter directory of your output file.xlsx')
